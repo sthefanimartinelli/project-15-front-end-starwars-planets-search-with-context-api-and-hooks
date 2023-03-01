@@ -2,6 +2,7 @@ import { useContext, useState } from 'react';
 import PlanetsContext from '../context/PlanetsContext';
 
 function Table() {
+  const NUMBER_FOR_SORT = -1;
   const [nameFilter, setNameFilter] = useState('');
   const [columnFilter, setColumnFilter] = useState('population');
   const [comparisonFilter, setComparisonFilter] = useState('maior que');
@@ -15,7 +16,6 @@ function Table() {
   ]);
   const [order, setorder] = useState({ column: 'population', sort: 'ASC' });
   const [orderApplied, setOrderApplied] = useState({});
-
   // Estado que vai armazenar uma array com objetos, sendo que cada objeto representa um filtro com 3 chaves
   const [numericArray, setNumericArray] = useState([]);
 
@@ -49,25 +49,21 @@ function Table() {
   };
 
   // Função que ordena os dados
+  // Código feito baseado na mentoria do Tiago
   const sortPlanets = () => {
     const { column, sort } = orderApplied;
     if (orderApplied === {}) return updateFilters();
 
     return updateFilters().sort((a, b) => {
-      if (sort === 'ASC') {
-        if (a[column] === 'unknown') {
-          return 1;
-        } if (b[column] === 'unknown') {
-          return -1;
-        } return a[column] - b[column];
+      if (a[column] === 'unknown') {
+        return 1;
       }
-      if (sort === 'DESC') {
-        if (a[column] === 'unknown') {
-          return 1;
-        } if (b[column] === 'unknown') {
-          return -1;
-        } return b[column] - a[column];
+      if (b[column] === 'unknown') {
+        return NUMBER_FOR_SORT;
+      } if (sort === 'ASC') {
+        return a[column] - b[column];
       }
+      return b[column] - a[column];
     });
   };
 
