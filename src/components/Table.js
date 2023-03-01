@@ -13,6 +13,8 @@ function Table() {
     'rotation_period',
     'surface_water',
   ]);
+  const [order, setorder] = useState({ column: 'population', sort: 'ASC' });
+  const [orderApplied, setOrderApplied] = useState({});
 
   // Estado que vai armazenar uma array com objetos, sendo que cada objeto representa um filtro com 3 chaves
   const [numericArray, setNumericArray] = useState([]);
@@ -44,6 +46,29 @@ function Table() {
       return numericFiltersCombined;
     });
     return filtersResult;
+  };
+
+  // Função que ordena os dados
+  const sortPlanets = () => {
+    const { column, sort } = orderApplied;
+    if (orderApplied === {}) return updateFilters();
+
+    return updateFilters().sort((a, b) => {
+      if (sort === 'ASC') {
+        if (a[column] === 'unknown') {
+          return 1;
+        } if (b[column] === 'unknown') {
+          return -1;
+        } return a[column] - b[column];
+      }
+      if (sort === 'DESC') {
+        if (a[column] === 'unknown') {
+          return 1;
+        } if (b[column] === 'unknown') {
+          return -1;
+        } return b[column] - a[column];
+      }
+    });
   };
 
   return (
@@ -108,6 +133,54 @@ function Table() {
 
         </button>
       </>
+      {/* Seção para ordenar a tabela */}
+      <section>
+        <select
+          data-testid="column-sort"
+          value={ order.column }
+          onChange={ ({ target }) => setorder({ ...order, column: target.value }) }
+        >
+          <option value="population">population</option>
+          <option value="orbital_period">orbital_period</option>
+          <option value="diameter">diameter</option>
+          <option value="rotation_period">population</option>
+          <option value="surface_water">surface_water</option>
+        </select>
+        <label htmlFor="ASC">
+          Ascendente
+          <input
+            id="ASC"
+            type="radio"
+            name="order"
+            data-testid="column-sort-input-asc"
+            value="ASC"
+            checked={ order.sort === 'ASC' }
+            onChange={ ({ target }) => setorder({ ...order, sort: target.value }) }
+          />
+        </label>
+        <label htmlFor="DESC">
+          Descendente
+          <input
+            id="DESC"
+            type="radio"
+            name="order"
+            data-testid="column-sort-input-desc"
+            value="DESC"
+            checked={ order.sort === 'DESC' }
+            onChange={ ({ target }) => setorder({ ...order, sort: target.value }) }
+          />
+        </label>
+        <button
+          data-testid="column-sort-button"
+          type="button"
+          onClick={ () => setOrderApplied({
+            column: order.column,
+            sort: order.sort,
+          }) }
+        >
+          ORDENAR
+        </button>
+      </section>
       {/* Botão de remover todos os filtros */}
       <span>
         <button
@@ -155,9 +228,9 @@ function Table() {
         </thead>
         <tbody>
           {
-            updateFilters().map((planet) => (
+            sortPlanets().map((planet) => (
               <tr key={ planet.name }>
-                <td>{planet.name}</td>
+                <td data-testid="planet-name">{planet.name}</td>
                 <td>{planet.rotation_period}</td>
                 <td>{planet.orbital_period}</td>
                 <td>{planet.diameter}</td>
