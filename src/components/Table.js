@@ -108,6 +108,41 @@ function Table() {
 
         </button>
       </>
+      {/* Botão de remover todos os filtros */}
+      <span>
+        <button
+          data-testid="button-remove-filters"
+          onClick={ () => {
+            setNumericArray([]);
+            setColumnFilter('population');
+            setComparisonFilter('maior que');
+            setValueFilter(0);
+          } }
+        >
+          Remover todas filtragens
+        </button>
+      </span>
+      {/* Código baseado na mentoria do Tiago */}
+      {numericArray.map((filter, index) => (
+        <div key={ index } data-testid="filter">
+          <button
+            onClick={ () => {
+              const arrayClone = [...numericArray];
+              arrayClone.splice(index, 1);
+              setNumericArray(arrayClone);
+            } }
+          >
+            𝙭
+          </button>
+          <span>
+            {filter.column}
+            {' '}
+            {filter.comparison}
+            {' '}
+            {filter.value}
+          </span>
+        </div>
+      ))}
 
       <table>
         <thead>
