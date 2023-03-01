@@ -5,38 +5,42 @@ import PlanetsContext from './PlanetsContext';
 function PlanetsProvider({ children }) {
   const [planets, setPlanets] = useState([]);
   const [nameFilter, setNameFilter] = useState('');
-  const [numericFilter, setNumericFilter] = useState([]);
+  const [numericArray, setNumericArray] = useState([]);
 
   const planetsFiltered = planets.filter((planet) => planet.name.includes(nameFilter));
 
   const nameAndNumericFiltered = useCallback(() => {
-    const numeric = planetsFiltered.filter((planet) => {
-      const { columnFilter, comparisonFilter, valueFilter } = numericFilter;
-      switch (comparisonFilter) {
-      case 'maior que':
-        return Number(planet[columnFilter]) > (Number(valueFilter));
-      case 'menor que':
-        return Number(planet[columnFilter]) < (Number(valueFilter));
-      case 'igual a':
-        return Number(planet[columnFilter]) === (Number(valueFilter));
-      default:
-        return true;
-      }
+    const filtersResult = planetsFiltered.filter((planet) => {
+      const numericFiltersCombined = numericArray
+        .every(({ columnFilter, comparisonFilter, valueFilter }) => {
+          switch (comparisonFilter) {
+          case 'maior que':
+            return Number(planet[columnFilter]) > (Number(valueFilter));
+          case 'menor que':
+            return Number(planet[columnFilter]) < (Number(valueFilter));
+          case 'igual a':
+            return Number(planet[columnFilter]) === (Number(valueFilter));
+          default:
+            return true;
+          }
+        });
+      return numericFiltersCombined;
     });
-    return numeric;
-  }, [numericFilter, planetsFiltered]);
+    return filtersResult;
+  }, [planetsFiltered, numericArray]);
 
   const context = useMemo(() => ({
     planets,
     nameFilter,
-    numericFilter,
+    numericArray,
     setPlanets,
     setNameFilter,
-    setNumericFilter,
     planetsFiltered,
     nameAndNumericFiltered,
-  }), [planets, nameFilter, numericFilter, setPlanets,
-    setNameFilter, setNumericFilter, planetsFiltered, nameAndNumericFiltered]);
+    setNumericArray,
+  }), [planets, nameFilter, numericArray, setPlanets,
+    setNameFilter, planetsFiltered, setNumericArray,
+    nameAndNumericFiltered]);
 
   useEffect(() => {
     fetch('https://swapi.dev/api/planets')

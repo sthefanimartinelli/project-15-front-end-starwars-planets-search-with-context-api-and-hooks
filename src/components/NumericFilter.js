@@ -6,7 +6,7 @@ function NumericFilter() {
   const [columnFilter, setColumnFilter] = useState('population');
   const [comparisonFilter, setComparisonFilter] = useState('maior que');
   const [valueFilter, setValueFilter] = useState(0);
-  const { setNumericFilter } = context;
+  const { numericArray, setNumericArray } = context;
 
   return (
     <>
@@ -45,8 +45,11 @@ function NumericFilter() {
       <button
         type="button"
         data-testid="button-filter"
-        onClick={ () => (
-          setNumericFilter({ columnFilter, comparisonFilter, valueFilter })) }
+        onClick={ () => {
+          // setNumericFilter({ columnFilter, comparisonFilter, valueFilter });
+          setNumericArray([...numericArray,
+            { columnFilter, comparisonFilter, valueFilter }]);
+        } }
       >
         FILTRAR
 
