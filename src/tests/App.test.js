@@ -2,15 +2,15 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import App from '../App';
 import userEvent from '@testing-library/user-event';
-import { wait } from '@testing-library/user-event/dist/utils';
-import testData from '../../cypress/mocks/testData';
 
 describe('Testes envolvendo toda a aplicação', () => {
-  beforeEach(() => {
-    jest.spyOn(global, 'fetch').mockResolvedValue(
-      { json: jest.fn().mockResolvedValue(testData) },
-    );
-  });
+  // Mock dos dados da API
+  // beforeEach(() => {
+  //   jest.spyOn(global, 'fetch').mockResolvedValue(
+  //     { json: jest.fn().mockResolvedValue(testData) },
+  //   );
+  // });
+
   // test('Testa o fecth à API', async () => {
   //   render(<App />);
   //   // wait(4000);
@@ -61,7 +61,7 @@ describe('Testes envolvendo toda a aplicação', () => {
     
   });
 
-  test('Testa os casos de filtragem envolvendo o filtro de comparação', async () => {
+  test('Testa os casos de filtragem envolvendo os filtros de comparação', async () => {
     render(<App/>);
 
     await waitFor(() => {
@@ -80,5 +80,32 @@ describe('Testes envolvendo toda a aplicação', () => {
     userEvent.type(valueFilter, '200000');
     userEvent.click(btnFilter);
     expect(screen.getByRole('cell', {name: /alderaan/i})).toBeInTheDocument();
+
+    userEvent.selectOptions(columnFilter, 'orbital_period');
+    userEvent.selectOptions(comparisonFilter, 'menor que');
+    userEvent.clear(valueFilter)
+    userEvent.type(valueFilter, '463');
+    userEvent.click(btnFilter);
+    expect(screen.getByRole('cell', {name: /naboo/i})).toBeInTheDocument();
+
+    userEvent.selectOptions(columnFilter, 'diameter');
+    userEvent.selectOptions(comparisonFilter, 'igual a');
+    userEvent.clear(valueFilter)
+    userEvent.type(valueFilter, '12240');
+    userEvent.click(btnFilter);
+    expect(screen.getByRole('cell', {name: /coruscant/i})).toBeInTheDocument();
+
+    const removeAllFilterBtn = screen.getByTestId('button-remove-filters');
+    userEvent.click(removeAllFilterBtn);
+    expect(screen.getByRole('cell', {name: /bespin/i})).toBeInTheDocument();
+
   });
+
+  // test('Testa os casos de filtragem envolvendo o filtro de comparação menor que', async () => {
+  //   await waitFor(() => {
+  //     expect(screen.getByRole('cell', {name: /tatooine/i})).toBeInTheDocument();
+	// 	}, { timeout: 4000 });
+
+
+  // });
 });
