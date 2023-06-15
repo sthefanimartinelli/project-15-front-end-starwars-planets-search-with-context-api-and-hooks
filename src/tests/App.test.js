@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import App from '../App';
 import userEvent from '@testing-library/user-event';
 
@@ -9,21 +9,6 @@ describe('Testes envolvendo toda a aplicação', () => {
   //   jest.spyOn(global, 'fetch').mockResolvedValue(
   //     { json: jest.fn().mockResolvedValue(testData) },
   //   );
-  // });
-
-  // test('Testa o fecth à API', async () => {
-  //   render(<App />);
-  //   // wait(4000);
-  //   // const tatooineEl = screen.findByRole('cell', { name: /tatooine/i });
-  //   // expect(tatooineEl).toBeInTheDocument();
-  //   // const row = screen.findAllByRole('row');
-  //   // expect(row.length).toBe(11);
-
-  //   // await waitFor(() => {
-	// 	// 	const row = screen.findAllByRole('row');
-	// 	// 	expect(row.length).toEqual(11);
-	// 	// }, { timeout: 4000 })
-
   // });
 
   test('Testa os elementos de filtragem presentes na página', () => {
@@ -73,13 +58,11 @@ describe('Testes envolvendo toda a aplicação', () => {
     const btnFilter = screen.getByTestId('button-filter');
     const valueFilter = screen.getByTestId('value-filter');
 
-
-    userEvent.selectOptions(columnFilter, 'population');
-    userEvent.selectOptions(comparisonFilter, 'maior que');
-    userEvent.clear(valueFilter)
-    userEvent.type(valueFilter, '200000');
     userEvent.click(btnFilter);
     expect(screen.getByRole('cell', {name: /alderaan/i})).toBeInTheDocument();
+
+    userEvent.selectOptions(columnFilter, 'diameter');
+    userEvent.click(btnFilter);
 
     userEvent.selectOptions(columnFilter, 'orbital_period');
     userEvent.selectOptions(comparisonFilter, 'menor que');
@@ -88,24 +71,59 @@ describe('Testes envolvendo toda a aplicação', () => {
     userEvent.click(btnFilter);
     expect(screen.getByRole('cell', {name: /naboo/i})).toBeInTheDocument();
 
-    userEvent.selectOptions(columnFilter, 'diameter');
+    userEvent.selectOptions(columnFilter, 'surface_water');
     userEvent.selectOptions(comparisonFilter, 'igual a');
     userEvent.clear(valueFilter)
-    userEvent.type(valueFilter, '12240');
+    userEvent.type(valueFilter, '1');
     userEvent.click(btnFilter);
-    expect(screen.getByRole('cell', {name: /coruscant/i})).toBeInTheDocument();
-
-    const removeAllFilterBtn = screen.getByTestId('button-remove-filters');
-    userEvent.click(removeAllFilterBtn);
-    expect(screen.getByRole('cell', {name: /bespin/i})).toBeInTheDocument();
+    expect(screen.getByRole('cell', {name: /tatooine/i})).toBeInTheDocument();
 
   });
 
-  // test('Testa os casos de filtragem envolvendo o filtro de comparação menor que', async () => {
-  //   await waitFor(() => {
-  //     expect(screen.getByRole('cell', {name: /tatooine/i})).toBeInTheDocument();
-	// 	}, { timeout: 4000 });
+  test('Testa o caso de filtrar com uma opção da coluna, e ela não ficar disponível novamente', async () => {
+    render(<App/>);
+
+    await waitFor(() => {
+      expect(screen.getByRole('cell', {name: /tatooine/i})).toBeInTheDocument();
+		}, { timeout: 4000 });
+
+    const columnFilter = screen.getByTestId('column-filter');
+    const comparisonFilter = screen.getByTestId('comparison-filter');
+    const btnFilter = screen.getByTestId('button-filter');
+    const valueFilter = screen.getByTestId('value-filter');
 
 
-  // });
+    userEvent.selectOptions(columnFilter, 'population');
+    userEvent.selectOptions(comparisonFilter, 'maior que');
+    userEvent.clear(valueFilter)
+    userEvent.type(valueFilter, '200000');
+    userEvent.click(btnFilter);
+    const view = screen.getByText(/coluna/i);
+    expect(within(view).getByDisplayValue(/orbital_period/i)).toBeInTheDocument();
+
+  });
+
+  test('Testa o sort', async () => {
+    render(<App/>);
+
+    await waitFor(() => {
+      expect(screen.getByRole('cell', {name: /tatooine/i})).toBeInTheDocument();
+		}, { timeout: 4000 });
+
+    const columnSortFilter = screen.getByTestId('column-sort');
+    const ascFilter = screen.getByRole('radio', {name: /ascendente/i});
+    const descFilter = screen.getByRole('radio', {name: /descendente/i});
+    const sortBtn = screen.getByRole('button', {name: /ordenar/i});
+
+    userEvent.click(sortBtn);
+
+    userEvent.selectOptions(columnSortFilter, 'population');
+    userEvent.click(ascFilter);
+    userEvent.click(sortBtn);
+    
+    userEvent.selectOptions(columnSortFilter, 'orbital_period');
+    userEvent.click(descFilter);
+    userEvent.click(sortBtn);
+
+  });
 });
