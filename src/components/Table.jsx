@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import PropTypes from 'prop-types';
 import PlanetsContext from '../context/PlanetsContext';
 
-function Table({ sortFunction }) {
+function Table({ sortedPlanets }) {
   const context = useContext(PlanetsContext);
   const { planets } = context;
 
@@ -18,7 +18,7 @@ function Table({ sortFunction }) {
       </thead>
       <tbody>
         {
-          sortFunction().map((planet) => (
+          sortedPlanets().map((planet) => (
             <tr key={ planet.name }>
               <td data-testid="planet-name">{planet.name}</td>
               <td>{planet.rotation_period}</td>
@@ -41,7 +41,7 @@ function Table({ sortFunction }) {
 }
 
 Table.propTypes = {
-  sortFunction: PropTypes.func.isRequired,
+  sortedPlanets: PropTypes.func.isRequired,
 };
 
 export default Table;
