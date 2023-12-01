@@ -20,6 +20,7 @@ function PlanetsProvider({ children }) {
       });
       setPlanets(responseWithoutResidents);
     };
+
     fecthInfo().catch(console.warn);
   }, []);
 

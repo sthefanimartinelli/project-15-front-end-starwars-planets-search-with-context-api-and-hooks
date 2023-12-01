@@ -1,11 +1,11 @@
 import PlanetsProvider from './context/PlanetsProvider';
-import Table from './components/Table';
+import Home from './pages/Home';
 import './App.css';
 
 function App() {
   return (
     <PlanetsProvider>
-      <Table />
+      <Home />
     </PlanetsProvider>
   );
 }

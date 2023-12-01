@@ -1,7 +1,8 @@
 import { useContext, useState } from 'react';
 import PlanetsContext from '../context/PlanetsContext';
+import Table from '../components/Table';
 
-function Table() {
+function Home() {
   const NUMBER_FOR_SORT = -1;
   const [nameFilter, setNameFilter] = useState('');
   const [columnFilter, setColumnFilter] = useState('population');
@@ -49,10 +50,9 @@ function Table() {
   };
 
   // Função que ordena os dados
-  // Código feito baseado na mentoria do Tiago
   const sortPlanets = () => {
     const { column, sort } = orderApplied;
-    if (orderApplied === {}) return updateFilters();
+    if (Object.keys(orderApplied).length === 0) return updateFilters();
 
     return updateFilters().sort((a, b) => {
       if (a[column] === 'unknown') {
@@ -84,7 +84,7 @@ function Table() {
             value={ columnFilter }
             onChange={ (e) => setColumnFilter(e.target.value) }
           >
-            {['population', 'orbital_period', 'diameter', // Código da monitoria do Tiago
+            {['population', 'orbital_period', 'diameter',
               'rotation_period', 'surface_water']
               .filter((item) => !numericArray
                 .find((filterObj) => item === filterObj.column))
@@ -213,38 +213,9 @@ function Table() {
         </div>
       ))}
 
-      <table>
-        <thead>
-          <tr>
-            { planets[0]
-          && Object.keys(planets[0]).map((title, index) => (
-            <th key={ `${title}-${index}` }>{title}</th>
-          ))}
-          </tr>
-        </thead>
-        <tbody>
-          {
-            sortPlanets().map((planet) => (
-              <tr key={ planet.name }>
-                <td data-testid="planet-name">{planet.name}</td>
-                <td>{planet.rotation_period}</td>
-                <td>{planet.orbital_period}</td>
-                <td>{planet.diameter}</td>
-                <td>{planet.climate}</td>
-                <td>{planet.gravity}</td>
-                <td>{planet.terrain}</td>
-                <td>{planet.surface_water}</td>
-                <td>{planet.population}</td>
-                <td>{planet.films}</td>
-                <td>{planet.created}</td>
-                <td>{planet.edited}</td>
-              </tr>
-            ))
-          }
-        </tbody>
-      </table>
+      <Table sortFunction={ sortPlanets } />
     </>
   );
 }
 
-export default Table;
+export default Home;
